@@ -1,1 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>K Sibi Search</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f8f9fa;
+    padding: 20px 10px;
+    color: #202124;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.logo .k {
+    color: #4285F4;
+}
+
+.logo .sibi {
+    color: #000;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tab-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 22px;
+    background: #e0e0e0;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-btn.active {
+    background: #ff0000;
+    color: white;
+}
+
+.tab-btn.google-active {
+    background: #4285F4;
+    color: white;
+}
+
+/* =========================
+   SEARCH BOX
+========================= */
+
+.search-area {
+    position: relative;
+}
+
+.search-box {
+    height: 54px;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 28px;
+    padding: 0 10px 0 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.search-box:focus-within {
+    border-color: #4285F4;
+    box-shadow: 0 2px 12px rgba(66,133,244,0.18);
+}
+
+.search-input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    min-width: 0;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 19px;
+    cursor: pointer;
+    padding: 8px;
+    color: #5f6368;
+}
+
+.icon-btn:hover {
+    color: #4285F4;
+}
+
+.mic-btn.listening {
+    color: red;
+    animation: pulse 0.8s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* =========================
+   SUGGESTIONS
+========================= */
+
+.suggestions {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: none;
+    z-index: 1000;
+}
+
+.suggestion-title {
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #777;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-item {
+    min-height: 48px;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 10px;
+}
+
+.suggestion-item:hover {
+    background: #f2f2f2;
+}
+
+.suggestion-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.suggestion-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    margin-top: 18px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
+/* =========================
+   VIDEO PLAYER
+========================= */
+
+.player-container {
+    display: none;
+    margin-top: 20px;
+}
+
+.player-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 14px;
+    background: #000;
+}
+
+/* =========================
+   VIDEO RESULTS
+========================= */
+
+.results {
+    margin-top: 20px;
+    display: grid;
+    gap: 16px;
+}
+
+.video-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.video-thumbnail {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+}
+
+.video-info {
+    padding: 12px;
+}
+
+.video-title {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.video-channel {
+    color: #777;
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+.video-date {
+    color: #999;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.play-btn {
+    margin-top: 10px;
+    border: none;
+    background: #ff0000;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.youtube-btn {
+    margin-top: 10px;
+    margin-left: 5px;
+    border: none;
+    background: #eee;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    margin-top: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.error {
+    color: #d93025;
+}
+
+.success {
+    color: #188038;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 15px 8px;
+    }
+
+    .logo {
+        font-size: 1.9rem;
+    }
+
+    .tab-btn {
+        padding: 9px 15px;
+        font-size: 13px;
+    }
+
+    .search-box {
+        height: 52px;
+    }
+
+    .search-input {
+        font-size: 15px;
+    }
+
+    .video-title {
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- LOGO -->
+    <div class="logo">
+        🔍
+        <span class="k">K</span>
+        <span class="sibi">Sibi</span>
+    </div>
+
+
+    <!-- SEARCH ENGINE BUTTONS -->
+
+    <div class="tab-container">
+
+        <button
+            id="ytTab"
+            class="tab-btn active"
+            onclick="setEngine('youtube')">
+
+            ▶️ YouTube
+
+        </button>
+
+
+        <button
+            id="gTab"
+            class="tab-btn"
+            onclick="setEngine('google')">
+
+            🔍 Google
+
+        </button>
+
+    </div>
+
+
+    <!-- SEARCH AREA -->
+
+    <div class="search-area">
+
+        <form id="searchForm">
+
+            <div class="search-box">
+
+                <input
+                    id="searchInput"
+                    class="search-input"
+                    type="text"
+                    placeholder="YouTube-ல் தேடுங்கள்..."
+                    autocomplete="off"
+                >
+
+
+                <button
+                    type="button"
+                    id="micBtn"
+                    class="icon-btn"
+                    title="Voice Search">
+
+                    🎤
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="icon-btn"
+                    title="Search">
+
+                    🔍
+
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- SUGGESTIONS -->
+
+        <div
+            id="suggestions"
+            class="suggestions">
+        </div>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div
+        id="status"
+        class="status">
+    </div>
+
+
+    <!-- VIDEO PLAYER -->
+
+    <div
+        id="playerContainer"
+        class="player-container">
+
+        <iframe
+            id="videoPlayer"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+
+    </div>
+
+
+    <!-- YOUTUBE RESULTS -->
+
+    <div
+        id="results"
+        class="results">
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+
+/*
+   YouTube Data API v3 Key
+
+   இங்கே உங்கள் API key-ஐ போடவும்.
+
+   Example:
+
+   const YOUTUBE_API_KEY =
+   "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXX";
+
+*/
+
+const YOUTUBE_API_KEY =
+"PASTE_YOUR_YOUTUBE_API_KEY_HERE";
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let currentEngine = "youtube";
+
+let suggestionTimer = null;
+
+let speechRecognition = null;
+
+
+const input =
+document.getElementById("searchInput");
+
+const searchForm =
+document.getElementById("searchForm");
+
+const suggestionsBox =
+document.getElementById("suggestions");
+
+const micBtn =
+document.getElementById("micBtn");
+
+const results =
+document.getElementById("results");
+
+const status =
+document.getElementById("status");
+
+const playerContainer =
+document.getElementById("playerContainer");
+
+const videoPlayer =
+document.getElementById("videoPlayer");
+
+
+/* =========================================================
+   CHANGE ENGINE
+========================================================= */
+
+function setEngine(engine) {
+
+    currentEngine = engine;
+
+    const ytTab =
+    document.getElementById("ytTab");
+
+    const gTab =
+    document.getElementById("gTab");
+
+
+    ytTab.className =
+    "tab-btn";
+
+    gTab.className =
+    "tab-btn";
+
+
+    if (engine === "youtube") {
+
+        ytTab.classList.add("active");
+
+        input.placeholder =
+        "YouTube-ல் தேடுங்கள்...";
+
+    }
+
+    else {
+
+        gTab.classList.add("google-active");
+
+        input.placeholder =
+        "Google-ல் தேடுங்கள்...";
+
+    }
+
+
+    suggestionsBox.style.display =
+    "none";
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function getHistory() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem("ksibiSearchHistory") || "[]"
+        );
+
+    }
+
+    catch (error) {
+
+        return [];
+
+    }
+
+}
+
+
+function saveHistory(query) {
+
+    if (!query) return;
+
+    let history =
+    getHistory();
+
+
+    history =
+    history.filter(
+        item =>
+        item.toLowerCase() !==
+        query.toLowerCase()
+    );
+
+
+    history.unshift(query);
+
+
+    history =
+    history.slice(0, 8);
+
+
+    localStorage.setItem(
+        "ksibiSearchHistory",
+        JSON.stringify(history)
+    );
+
+}
+
+
+/* =========================================================
+   SHOW HISTORY
+========================================================= */
+
+function showHistory() {
+
+    const history =
+    getHistory();
+
+
+    if (!history.length) {
+
+        suggestionsBox.style.display =
+        "none";
+
+        return;
+
+    }
+
+
+    suggestionsBox.innerHTML = "";
+
+
+    const title =
+    document.createElement("div");
+
+    title.className =
+    "suggestion-title";
+
+    title.textContent =
+    "🕒 சமீபத்திய தேடல்கள்";
+
+    suggestionsBox.appendChild(title);
+
+
+    history.forEach(item => {
+
+        const div =
+        document.createElement("div");
+
+        div.className =
+        "suggestion-item";
+
+
+        const left =
+        document.createElement("div");
+
+        left.className =
+        "suggestion-left";
+
+
+        const icon =
+        document.createElement("span");
+
+        icon.textContent =
+        "🕒";
+
+
+        const text =
+        document.createElement("span");
+
+        text.className =
+        "suggestion-text";
+
+        text.textContent =
+        item;
+
+
+        left.appendChild(icon);
+
+        left.appendChild(text);
+
+
+        const arrow =
+        document.createElement("span");
+
+        arrow.textContent =
+        "↖";
+
+
+        div.appendChild(left);
+
+        div.appendChild(arrow);
+
+
+        div.onclick = function() {
+
+            input.value =
+            item;
+
+            suggestionsBox.style.display =
+            "none";
+
+            performSearch(item);
+
+        };
+
+
+        suggestionsBox.appendChild(div);
+
+    });
+
+
+    suggestionsBox.style.display =
+    "block";
+
+}
+
+
+/* =========================================================
+   GOOGLE AUTOCOMPLETE
+========================================================= */
+
+input.addEventListener(
+"input",
+function() {
+
+    const query =
+    input.value.trim();
+
+
+    clearTimeout(
+        suggestionTimer
+    );
+
+
+    if (!query) {
+
+        showHistory();
+
+        return;
+
+    }
+
+
+    suggestionTimer =
+    setTimeout(
+        () => getSuggestions(query),
+        250
+    );
+
+});
+
+
+function getSuggestions(query) {
+
+    const callbackName =
+    "ksibiSuggest_" +
+    Date.now();
+
+
+    window[callbackName] =
+    function(data) {
+
+        suggestionsBox.innerHTML =
+        "";
+
+
+        if (!data || !data[1]) {
+
+            suggestionsBox.style.display =
+            "none";
+
+            cleanup();
+
+            return;
+
+        }
+
+
+        data[1]
+        .slice(0, 8)
+        .forEach(item => {
+
+            const text =
+            Array.isArray(item)
+            ? item[0]
+            : item;
+
+
+            const div =
+            document.createElement("div");
+
+            div.className =
+            "suggestion-item";
+
+
+            const left =
+            document.createElement("div");
+
+            left.className =
+            "suggestion-left";
+
+
+            const icon =
+            document.createElement("span");
+
+            icon.textContent =
+            "🔍";
+
+
+            const textElement =
+            document.createElement("span");
+
+            textElement.className =
+            "suggestion-text";
+
+            textElement.textContent =
+            text;
+
+
+            left.appendChild(icon);
+
+            left.appendChild(
+                textElement
+            );
+
+
+            const arrow =
+            document.createElement("span");
+
+            arrow.textContent =
+            "↖";
+
+
+            div.appendChild(left);
+
+            div.appendChild(arrow);
+
+
+            div.onclick =
+            function() {
+
+                input.value =
+                text;
+
+                suggestionsBox.style.display =
+                "none";
+
+                performSearch(text);
+
+            };
+
+
+            suggestionsBox.appendChild(div);
+
+        });
+
+
+        suggestionsBox.style.display =
+        "block";
+
+
+        cleanup();
+
+    };
+
+
+    const script =
+    document.createElement("script");
+
+
+    script.id =
+    callbackName;
+
+
+    script.src =
+    "https://suggestqueries.google.com/complete/search" +
+    "?client=chrome" +
+    "&q=" +
+    encodeURIComponent(query) +
+    "&callback=" +
+    callbackName;
+
+
+    document.body.appendChild(script);
+
+
+    function cleanup() {
+
+        const old =
+        document.getElementById(callbackName);
+
+        if (old) old.remove();
+
+        try {
+
+            delete window[callbackName];
+
+        }
+
+        catch (e) {}
+
+    }
+
+
+    setTimeout(
+        cleanup,
+        4000
+    );
+
+}
+
+
+/* =========================================================
+   VOICE SEARCH
+========================================================= */
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+
+if (SpeechRecognition) {
+
+    speechRecognition =
+    new SpeechRecognition();
+
+
+    speechRecognition.lang =
+    "ta-IN";
+
+
+    speechRecognition.continuous =
+    false;
+
+
+    speechRecognition.interimResults =
+    false;
+
+
+    micBtn.onclick =
+    function() {
+
+        try {
+
+            speechRecognition.start();
+
+            micBtn.classList.add(
+                "listening"
+            );
+
+            status.textContent =
+            "🎤 கேட்கிறேன்...";
+
+        }
+
+        catch (error) {}
+
+    };
+
+
+    speechRecognition.onresult =
+    function(event) {
+
+        const text =
+        event.results[0][0].transcript;
+
+
+        input.value =
+        text;
+
+
+        micBtn.classList.remove(
+            "listening"
+        );
+
+
+        status.textContent =
+        "";
+
+
+        performSearch(text);
+
+    };
+
+
+    speechRecognition.onerror =
+    function() {
+
+        micBtn.classList.remove(
+            "listening"
+        );
+
+        status.textContent =
+        "🎤 Voice Search பயன்படுத்த முடியவில்லை.";
+
+    };
+
+
+    speechRecognition.onend =
+    function() {
+
+        micBtn.classList.remove(
+            "listening"
+        );
+
+    };
+
+}
+
+else {
+
+    micBtn.style.display =
+    "none";
+
+}
+
+
+/* =========================================================
+   MAIN SEARCH
+========================================================= */
+
+function performSearch(query) {
+
+    query =
+    query.trim();
+
+
+    if (!query) {
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    saveHistory(query);
+
+
+    suggestionsBox.style.display =
+    "none";
+
+
+    if (currentEngine === "google") {
+
+        /*
+           Google முழு Search
+        */
+
+        window.location.href =
+        "https://www.google.com/search?q=" +
+        encodeURIComponent(query);
+
+    }
+
+    else {
+
+        searchYouTube(query);
+
+    }
+
+}
+
+
+/* =========================================================
+   YOUTUBE SEARCH
+========================================================= */
+
+async function searchYouTube(query) {
+
+    playerContainer.style.display =
+    "none";
+
+
+    videoPlayer.src =
+    "";
+
+
+    results.innerHTML =
+    "";
+
+
+    status.textContent =
+    "🔄 YouTube-ல் தேடுகிறது...";
+
+
+    /*
+       API KEY இல்லாவிட்டால்
+       YouTube Search website திறக்கும்.
+    */
+
+    if (
+        !YOUTUBE_API_KEY ||
+        YOUTUBE_API_KEY ===
+        "PASTE_YOUR_YOUTUBE_API_KEY_HERE"
+    ) {
+
+        status.textContent =
+        "";
+
+
+        results.innerHTML = `
+            <div class="message">
+
+                <div>
+                    ⚠️ YouTube API Key இன்னும் சேர்க்கப்படவில்லை.
+                </div>
+
+                <button
+                    class="play-btn"
+                    onclick="openYouTubeSearch()">
+
+                    ▶️ YouTube Search திறக்க
+
+                </button>
+
+            </div>
+        `;
+
+
+        window.lastYouTubeQuery =
+        query;
+
+
+        return;
+
+    }
+
+
+    try {
+
+        const apiURL =
+        "https://www.googleapis.com/youtube/v3/search" +
+        "?part=snippet" +
+        "&q=" +
+        encodeURIComponent(query) +
+        "&type=video" +
+        "&maxResults=12" +
+        "&regionCode=IN" +
+        "&key=" +
+        encodeURIComponent(
+            YOUTUBE_API_KEY
+        );
+
+
+        const response =
+        await fetch(apiURL);
+
+
+        const data =
+        await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error &&
+                data.error.message
+                ? data.error.message
+                : "YouTube API Error"
+            );
+
+        }
+
+
+        status.textContent =
+        "";
+
+
+        displayResults(
+            data.items || []
+        );
+
+
+    }
+
+    catch (error) {
+
+        status.textContent =
+        "";
+
+
+        results.innerHTML = `
+            <div class="message error">
+
+                ❌ YouTube Search Error
+
+                <br><br>
+
+                ${escapeHTML(error.message)}
+
+                <br><br>
+
+                <button
+                    class="play-btn"
+                    onclick="openYouTubeSearch()">
+
+                    ▶️ YouTube-ல் திறக்க
+
+                </button>
+
+            </div>
+        `;
+
+
+        window.lastYouTubeQuery =
+        query;
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY YOUTUBE RESULTS
+========================================================= */
+
+function displayResults(items) {
+
+    results.innerHTML =
+    "";
+
+
+    if (!items.length) {
+
+        results.innerHTML = `
+            <div class="message">
+
+                😔 வீடியோ கிடைக்கவில்லை.
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    items.forEach(item => {
+
+        const videoId =
+        item.id &&
+        item.id.videoId;
+
+
+        if (!videoId) return;
+
+
+        const snippet =
+        item.snippet;
+
+
+        const title =
+        snippet.title;
+
+
+        const channel =
+        snippet.channelTitle;
+
+
+        const published =
+        snippet.publishedAt
+        ? new Date(
+            snippet.publishedAt
+          ).toLocaleDateString(
+            "ta-IN"
+          )
+        : "";
+
+
+        const thumbnail =
+        snippet.thumbnails &&
+        (
+            snippet.thumbnails.high ||
+            snippet.thumbnails.medium ||
+            snippet.thumbnails.default
+        );
+
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "video-card";
+
+
+        /* THUMBNAIL */
+
+        const img =
+        document.createElement("img");
+
+  
